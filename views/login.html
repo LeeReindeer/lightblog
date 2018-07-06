@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS-->
+    <link href="../static/css/bootstrap.css" rel="stylesheet" media="screen">
+    <title>Login</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 offset-4 mt-5">
+                <form class="align-self-center" action="" method="post">
+                    <div class="form-group">
+                        <label for="usernameInput">用户名：</label>
+                        <input class="form-control" type="text" name="username" id="usernameInput" placeholder="用户名" required>
+                        <div class="invalid-feedback"></div>
+                        {{if .flash.waring}}
+                        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            <strong>{{.flash.waring}}</strong>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        {{end}}
+                    </div>
+                    <div class="form-group">
+                        <label for="passwordInput">密码：</label>
+                        <input class="form-control" type="password" name="password" id="passwordInput" placeholder="密码" required> {{if .flash.error}}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>{{.flash.error}}</strong>
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        {{end}}
+                    </div>
+                    {{if .register}}
+                    <div class="form-group">
+                        <label for="passAgain">确认密码：</label>
+                        <input class="form-control" type="password" name="passwordAgain" id="passAgain" placeholder="确认密码">
+                    </div>
+                    {{end}} {{if .login}}
+                    <input class="btn btn-primary" type="submit" placeholder="登录" value="登录">
+                    <a class="btn btn-primary" href="/register">注册新帐号</a>
+                    {{end}} {{if .register}}
+                    <input class="btn btn-primary" type="submit" placeholder="注册" value="注册">
+                    <a class="btn btn-info" href="/login">登录已有帐号</a>
+                    {{end}}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--jquery-->
+    <script src="../static/js/jquery.js"></script>
+    <script src="../static/js/bootstrap.js"></script>
+</body>
+
+</html>

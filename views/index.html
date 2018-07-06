@@ -1,0 +1,85 @@
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 align-items-center align-self-center">
+            <!--new blog-->
+            <form class="form-group blog-form" method="post" action="/">
+                <div class="form-group row">
+                    <textarea class="form-control" name="content" placeholder="欲言又止"></textarea>
+                </div>
+                <div class="form-group row float-right">
+                    <input type="submit" class="btn btn-primary" value="Light" />
+                </div>
+            </form>
+
+            <ul class="list-group blog-content">
+                {{range .blogs}}
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <a href="/user/{{.BlogUsername}}">
+                                <img src="{{.BlogUserAvatar}}" class="blog-avatar" />
+                            </a>
+                            <a href="/user/{{.BlogUsername}}">&nbsp;{{.BlogUsername}}</a>
+                        </div>
+                        <div class="col-lg-10">
+                            <br>
+                            <p class="text-left">
+                                {{.BlogContent}}
+                            </p>
+                            <div class="float-right ml-2 mr-2">
+                                <span>
+                                    <a href="#">{{.BlogTimeString}}</a> |
+                                    <a href="/blog/{{.BlogId}}">详情</a>|</span>
+                                <span>
+                                    <a href="/blog/like?id={{.BlogId}}&page=1">
+                                        <i class="fa fa-thumbs-up"></i>&nbsp;{{.BlogLike}}</a> |
+                                    <a href="/blog/dislike?id={{.BlogId}}&page=1">
+                                        <i class="fa fa-thumbs-down"></i>&nbsp;{{.BlogUnlike}}</a> |
+                                    <a href="#">
+                                        <i class="fa fa-comments"></i>&nbsp;{{.BlogComment}}</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+                {{end}}
+            </ul>
+
+            <nav class="mt-1">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">1</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">2</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">3</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                            <span class="sr-only">Next</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!--<div class="col-lg-4 ">
+                <img src="../static/img/avatar.jpg" alt="avatar" class="weibo-content-avatar" />
+                <ul class="nav nav-pills nav-stacked sidebar-nav">
+                    <li class="active"><a href="#">我的首页</a></li>
+                    <li><a href="#">@提及我</a></li>
+                    <li><a href="#">我的评论</a></li>
+                    <li><a href="#">我的收藏</a></li>
+                </ul>
+            </div>-->
+    </div>
+</div>
