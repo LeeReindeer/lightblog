@@ -37,6 +37,16 @@ func GetTimeLineByUid(uid int64) (blogs []LightBlog) {
 	return GetTimeLineByUidWithPaging(uid, 1)
 }
 
+func getBlogPreview(content string) (preview string) {
+	contentRune := []rune(content)
+	if len(contentRune) > 140 {
+		preview = string(contentRune[:140]) + "..."
+	} else {
+		preview = content
+	}
+	return
+}
+
 // every page has 20 blog
 // page start from 1
 func GetTimeLineByUidWithPaging(uid int64, page int) (blogs []LightBlog) {
@@ -55,7 +65,7 @@ func GetTimeLineByUidWithPaging(uid int64, page int) (blogs []LightBlog) {
 			util.CheckDBErr(err)
 			userMap[user.UserId] = &user
 		}
-
+		blogs[i].BlogPreview = getBlogPreview(blogs[i].BlogContent)
 		blogs[i].BlogTimeString = blogs[i].BlogTime.Format("2006-01-02 15:04:05")
 		blogs[i].BlogUsername = userMap[uid].UserName
 		blogs[i].BlogUserAvatar = userMap[uid].UserAvatar
@@ -75,15 +85,26 @@ func GetTimeLineCount(uid int64) (count int64) {
 	return nums
 }
 
-func GetBlogById(id int64) (blog Blog) {
+func GetBlogById(id int64) (lightblog LightBlog) {
 	o := orm.NewOrm()
-	blog.BlogId = id
-	err := o.Read(blog)
+	blog := Blog{BlogId: id}
+	err := o.Read(&blog)
 	util.CheckDBErr(err)
+	lightblog.Blog = blog
+
+	user := User{UserId: blog.BlogUid}
+	err = o.Read(&user)
+	util.CheckDBErr(err)
+
+	// fill
+	lightblog.BlogPreview = getBlogPreview(blog.BlogContent)
+	lightblog.BlogTimeString = blog.BlogTime.Format("2006-01-02 15:04:05")
+	lightblog.BlogUsername = user.UserName
+	lightblog.BlogUserAvatar = user.UserAvatar
 	return
 }
 
-func SaveBlog(blog Blog) int64 {
+func SaveBlog(blog *Blog) int64 {
 	o := orm.NewOrm()
 	id, err := o.Insert(&blog)
 	log.Println("new blog id: ", id)
@@ -91,7 +112,7 @@ func SaveBlog(blog Blog) int64 {
 	return id
 }
 
-///** counter **/
+/** counter func start**/
 func IncLikeBlog(blogId, uid int64) {
 	db, err := orm.GetDB()
 	_, err = db.Exec("UPDATE blog SET blog_like=blog_like+1 WHERE blog_id=?", blogId)
@@ -175,15 +196,20 @@ func IsUserDisLikeBlog(blogId, uid int64) bool {
 	return count != 0
 }
 
-//func IncBlogComment(id int64) {
-//
-//}
-//
-//func DecBlogComment(id int64) {
-//
-//}
-//
-///**counter func end**/
+func IncBlogComment(blogId int64) {
+	db, err := orm.GetDB()
+	_, err = db.Exec("UPDATE blog SET blog_comment=blog_comment+1 WHERE blog_id=?", blogId)
+	util.CheckDBErr(err)
+}
+
+func DecBlogComment(blogId int64) {
+	db, err := orm.GetDB()
+	_, err = db.Exec("UPDATE blog SET blog_comment=blog_comment-1 WHERE blog_id=?", blogId)
+	util.CheckDBErr(err)
+}
+
+/**counter func end**/
+
 //
 //func UpdateBlog(blog Blog) {
 //	stmt, err := DB.Prepare("UPDATE blog SET blog_content=? WHERE blog_id=?")
