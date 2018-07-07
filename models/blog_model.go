@@ -7,32 +7,6 @@ import (
 	"log"
 )
 
-//var DB *sql.DB
-
-//func init() {
-//	DB = OpenDB()
-//	if DB == nil {
-//		log.Fatalln("can't open database")
-//	}
-//}
-
-//func OpenDB() *sql.DB {
-//	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/lightblog?charset=utf8&parseTime=true",
-//		beego.AppConfig.String("mysqluser"),
-//		beego.AppConfig.String("mysqlpass")))
-//	util.CheckDBErr(err)
-//	if db.Ping() == nil {
-//		log.Println("Connected to mysql")
-//	} else {
-//		CloseDB(db)
-//	}
-//	return db
-//}
-//
-//func CloseDB(db *sql.DB) {
-//	db.Close()
-//}
-
 func GetTimeLineByUid(uid int64) (blogs []LightBlog) {
 	return GetTimeLineByUidWithPaging(uid, 1)
 }
