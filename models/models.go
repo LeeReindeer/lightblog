@@ -19,14 +19,14 @@ type Blog struct {
 }
 
 const (
-	LIKE_COUNT    = iota // 0
-	UNLIKE_COUNT  = iota // 1
-	COMMENT_COUNT = iota // 2
+	LIKE_COUNT   = iota // 0
+	UNLIKE_COUNT = iota // 1
 )
 
 type LightBlog struct {
 	Blog
 	//extra for convenience
+	BlogPreview    string //博客简述，取前140个字符
 	BlogUsername   string
 	BlogUserAvatar string
 	BlogTimeString string
@@ -58,21 +58,19 @@ func (user User) String() string {
 }
 
 type Comment struct {
-	CommId         int64 `orm:"pk"`
-	CommUid        int64
-	CommContent    string
-	CommTime       time.Time
-	CommHostId     int64
-	CommAttachBlog bool
-	CommLike       int
-	// abandoned
-	//CommUnlike     int
-}
+	CommId      int64 `orm:"pk"`
+	CommBlogId  int64
+	CommFromUid int64
+	CommToUid   int64
+	CommContent string
+	CommTime    time.Time
+	CommLike    int
 
-func (comment Comment) String() string {
-	return fmt.Sprintf("[comm_id:%d]->[host_id:%d] creator:%d, created:%s, content:%s, like:%d, unlike:%d",
-		comment.CommId, comment.CommHostId, comment.CommUid, comment.CommTime.Format("2006-01-02 15:04:05"),
-		comment.CommContent, comment.CommLike)
+	// 冗余信息
+	CommFromName   string
+	CommFromAvatar string
+	CommToName     string
+	CommToAvatar   string
 }
 
 type Tag struct {
