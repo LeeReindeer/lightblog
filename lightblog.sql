@@ -56,20 +56,28 @@ CREATE TABLE blog_counter (
 DROP TABLE IF EXISTS comment;
 CREATE TABLE comment (
   comm_id INT AUTO_INCREMENT PRIMARY KEY,
-  comm_uid INT, #发表评论的用户 id
+  comm_blog_id INT NOT NULL, #评论附属的博客id
+  comm_from_uid INT NOT NULL, #发表评论的用户 id
+  comm_to_uid INT, #回复的目标用户，当回复博客时为null
+
   comm_content VARCHAR(141), #评论内容
   comm_time DATETIME, #评论时间
-  # fixme
-  comm_host_id INT, #评论 blog 的评论，即为 blog_id；评论评论的评论，即为父评论 id
-  comm_attach_blog BOOL, #评论类型： TRUE-> 评论 blog ，FALSE->多重评论
-  comm_like INT,
-  #comm_unlike INT,
+  comm_like INT, #评论点赞数量。方便起见，评论点赞不再记录点赞的用户，因此可重复点赞
 
-  FOREIGN KEY (comm_uid)
+  # 冗余信息，方便单表查询
+  comm_from_name VARCHAR(20),
+  comm_from_avatar VARCHAR(100),
+  comm_to_name VARCHAR(20),
+  comm_to_avatar VARCHAR(100),
+
+  FOREIGN KEY (comm_blog_id)
+    REFERENCES blog(blog_id)
+    ON DELETE CASCADE, #博客删除的同时评论也删除
+  FOREIGN KEY (comm_from_uid)
     REFERENCES user(user_id)
-    ON DELETE NO ACTION,
-  FOREIGN KEY (comm_host_id)
-    REFERENCES comment(comm_id)
+    ON DELETE NO ACTION, #保留注销用户的评论，显示帐号为已注销
+  FOREIGN KEY (comm_to_uid)
+    REFERENCES user(user_id)
     ON DELETE NO ACTION
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
