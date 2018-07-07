@@ -1,0 +1,123 @@
+<!--/*博客详情&评论-->
+<div class="container">
+    <div class="row">
+        <!--blog detail-->
+        <div class="col-md-12 align-self-center" style="margin-top: 30px">
+            <ul class="list-group blog-content">
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <a href="/user/{{.blog.BlogUsername}}">
+                                <img src="{{.blog.BlogUserAvatar}}" class="blog-avatar" />
+                            </a>
+                            <a href="/user/{{.blog.BlogUsername}}">&nbsp;{{.blog.BlogUsername}}</a>
+                        </div>
+                        <div class="col-lg-10">
+                            <br>
+                            <p class="text-left">
+                            {{.blog.BlogContent}}
+                            </p>
+                            <div class="float-right ml-2 mr-2">
+                                <span>
+                                    <a href="#">{{.blog.BlogTimeString}}</a>|</span>
+                                <span>
+                                    <a href="/blog/like?id={{.blog.BlogId}}&redirect={{.redirect}}">
+                                        <i class="fa fa-thumbs-up"></i>&nbsp;{{.blog.BlogLike}}</a> |
+                                    <a href="/blog/dislike?id={{.blog.BlogId}}&redirect={{.redirect}}">
+                                        <i class="fa fa-thumbs-down"></i>&nbsp;{{.blog.BlogUnlike}}</a> |
+                                    <a href="#">
+                                        <i class="fa fa-comments"></i>&nbsp;{{.blog.BlogComment}}</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+
+        <div class="col-md-12 align-self-center comments">
+            <div class="comment-wrap">
+                <div class="photo">
+                    <div class="avatar" style="background-image: url('{{.user.UserAvatar}}')"></div>
+                </div>
+                {{/*comment to blog*/}}
+                <div class="comment-block">
+                    <form action="/comment" method="post">
+                        <textarea name="commentContent" cols="30" rows="3" placeholder="你的看法？"></textarea>
+                        <input type="hidden" name="blogId" value="{{.blog.BlogId}}">
+                        <input type="hidden" name="fromUserId" value="{{.user.UserId}}">
+                        <input type="hidden" name="redirect" value="{{.redirect}}">
+                        <button type="submit" class="btn btn-info float-right">
+                            <i class="far fa-paper-plane">发送</i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        {{range $index, $elem := .comments}}
+            <div class="comment-wrap">
+                <div class="photo">
+                    <div class="avatar" style="background-image: url('{{.CommFromAvatar}}')"></div>
+                    <a href="/user/{{$elem.CommFromName}}">{{$elem.CommFromName}}</a>
+                </div>
+                <div class="comment-block">
+                    <p class="comment-text">
+                        {{if $elem.CommToName}}
+                            <a href="/user/{{$elem.CommToName}}">@{{$elem.CommToName}}</a>&nbsp;
+                        {{end}}
+                    {{$elem.CommContent}}
+                    </p>
+                    <div class="bottom-comment">
+                        <div class="comment-date">{{$elem.CommTime}}</div>
+                        <ul class="comment-actions">
+                            <li class="reply"><a href="/comment/like?comm_id={{$elem.CommId}}&redirect={{$.redirect}}"><i class="fa fa-heart"></i>&nbsp;{{$elem.CommLike}}</a></li>
+                            <li class="reply">
+                                <a data-toggle="modal" data-target="#replyModal{{$index}}" data-userid="{{$elem.CommFromUid}}">
+                                <i class="fa fa-reply"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {{/*reply to comment, use modal*/}}
+            <div class="modal fade" id="replyModal{{$index}}" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="replyModalLabel">回复:{{$elem.CommFromName}}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="comment-block modal-body">
+                            <form action="/comment" method="post">
+                                <textarea class="form-control" name="commentContent" cols="30" rows="3" placeholder="你的看法？"></textarea>
+                                <input type="hidden" name="blogId" value="{{$.blog.BlogId}}">
+                                <input type="hidden" name="fromUserId" value="{{$.user.UserId}}">
+                                <input type="hidden" name="toUserId" id="toUserIdInput" value="{{$elem.CommFromUid}}">
+                                <input type="hidden" name="redirect" value="{{$.redirect}}">
+                                <div class="modal-footer form-group">
+                                    <button type="submit" class="btn btn-primary form-control float-right"><i class="far fa-paper-plane">发送</i></button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {{end}}
+            <!--
+            <script type="text/javascript">
+                $('#replyModal').on('show.bs.modal', function (event) {
+                    var button = $(event.relatedTarget) // Button that triggered the modal
+                    var userid = button.data('userid') // Extract info from data-* attributes
+                    var modal = $(this)
+                    modal.find('.modal-title').text('回复用户：' + userid)
+                    modal.find('.modal-body input #toUserIdInput').val(userid)
+                })
+            </script>-->
+        </div>
+    </div>
+</div>
+
+
