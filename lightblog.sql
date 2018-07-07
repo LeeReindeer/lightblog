@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS blog;
 CREATE TABLE blog (
   blog_id INT AUTO_INCREMENT PRIMARY KEY,
   blog_uid INT, # 作者 id
-  blog_content VARCHAR(141), # lightblog 字数限制 141
+  blog_content VARCHAR(1000), # lightblog 字数限制 1k
   blog_time DATETIME, #微博发布时间
 
   blog_like INT, #喜欢数量
@@ -35,14 +35,14 @@ CREATE TABLE blog (
       ON DELETE NO ACTION
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-# 点赞/反对/评论用户表
+# 点赞/反对 用户表
 DROP TABLE IF EXISTS blog_counter;
 CREATE TABLE blog_counter (
   blog_id INT,
   user_id INT,
-  count_type TINYINT, #like 0 , unlike 1, comment 2
+  count_type TINYINT, #like 0 , unlike 1
 
-  primary key (blog_id, user_id),
+  primary key (blog_id, user_id, count_type), #一个用户只能点赞一次
 
   FOREIGN KEY (blog_id)
     REFERENCES blog(blog_id)
@@ -75,10 +75,7 @@ CREATE TABLE comment (
     ON DELETE CASCADE, #博客删除的同时评论也删除
   FOREIGN KEY (comm_from_uid)
     REFERENCES user(user_id)
-    ON DELETE NO ACTION, #保留注销用户的评论，显示帐号为已注销
-  FOREIGN KEY (comm_to_uid)
-    REFERENCES user(user_id)
-    ON DELETE NO ACTION
+    ON DELETE NO ACTION #保留注销用户的评论，显示帐号为已注销
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 # 关注关系表
