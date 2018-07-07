@@ -38,9 +38,11 @@ func init() {
 	beego.Router("/blog/like", &controllers.BlogController{}, "get:LikeBlog")
 	beego.Router("/blog/dislike", &controllers.BlogController{}, "get:DisLikeBlog")
 
-	// new comment and delete comment: /comment?id=<id>
-	beego.Router("/comment:comm_id:int", &controllers.CommentController{},
-		"post:NewComment;delete:DeleteComment")
+	// new comment(/comment) and delete comment: GET: /comment?comm_id=<id>
+	beego.Router("/comment", &controllers.CommentController{},
+		"post:NewComment;get:DeleteComment")
+	//like a comment : GET: /comment/like?comm_id=
+	beego.Router("comment/like", &controllers.CommentController{}, "get:LikeComment")
 
 	beego.Router("/tag", &controllers.TagController{},
 		"get:ShowAllTags")
