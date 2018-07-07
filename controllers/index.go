@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"github.com/LeeReindeer/lightblog/models"
+	"github.com/LeeReindeer/lightblog/util"
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/context"
 	"log"
@@ -18,6 +19,7 @@ func (this *IndexController) TimeLine() {
 	uid, login := CheckLogin(this.Ctx)
 	log.Println("uid: ", uid)
 	if !login {
+		util.ClearCookies(this.Ctx)
 		this.Redirect("/login", 302)
 		return
 	}
@@ -25,7 +27,8 @@ func (this *IndexController) TimeLine() {
 	blogs := models.GetTimeLineByUid(uid)
 	log.Println("number of blogs: ", len(blogs))
 	this.Data["blogs"] = models.GetTimeLineByUid(uid)
-	this.Data["username"] = models.GetUserById(uid).UserName
+	this.Data["user"] = models.GetUserById(uid)
+	this.Data["redirect"] = this.Ctx.Input.URL()
 
 	this.Layout = "layout.html"
 	this.TplName = "index.html"
@@ -35,6 +38,8 @@ func CheckLogin(ctx *context.Context) (int64, bool) {
 	name := ctx.GetCookie("username")
 	passHash := models.GetPassHashByName(name)
 	passHashFromCookie, ok := ctx.GetSecureCookie(passHash, "p")
+
+	// check username and hash
 	if name == "" || !ok || passHashFromCookie != passHash {
 		log.Println("not login: cookie error")
 		return 0, false
@@ -42,6 +47,11 @@ func CheckLogin(ctx *context.Context) (int64, bool) {
 	uid := models.GetUserByName(name).UserId
 	if uid == 0 {
 		log.Println("not login: error id")
+		return 0, false
+	}
+	// check uid
+	uidFromCookie, ok := util.GetUserIdFromCookie(ctx)
+	if !ok || uidFromCookie != uid {
 		return 0, false
 	}
 	return uid, true
@@ -57,6 +67,6 @@ func (this *IndexController) NewLight() {
 		return
 	}
 	blog := models.Blog{BlogUid: int64(uid), BlogContent: content, BlogTime: time.Now()}
-	models.SaveBlog(blog)
+	models.SaveBlog(&blog)
 	this.Redirect("/", 302)
 }
