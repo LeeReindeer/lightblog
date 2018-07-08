@@ -80,8 +80,17 @@ func GetBlogById(id int64) (lightblog LightBlog) {
 
 func SaveBlog(blog *Blog) int64 {
 	o := orm.NewOrm()
-	id, err := o.Insert(&blog)
+	id, err := o.Insert(blog)
 	log.Println("new blog id: ", id)
+	util.CheckDBErr(err)
+	return id
+}
+
+func DeleteBlog(blogId int64) int64 {
+	o := orm.NewOrm()
+	blog := Blog{BlogId: blogId}
+	id, err := o.Delete(&blog)
+	log.Println("delete blog id: ", id)
 	util.CheckDBErr(err)
 	return id
 }
