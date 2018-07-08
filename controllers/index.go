@@ -27,7 +27,7 @@ func (this *IndexController) TimeLine() {
 	blogs := models.GetTimeLineByUid(uid)
 	log.Println("number of blogs: ", len(blogs))
 	this.Data["blogs"] = models.GetTimeLineByUid(uid)
-	this.Data["user"] = models.GetUserById(uid)
+	this.Data["thisUser"] = models.GetUserById(uid)
 	this.Data["redirect"] = this.Ctx.Input.URL()
 
 	this.Layout = "layout.html"
