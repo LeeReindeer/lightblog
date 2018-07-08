@@ -81,6 +81,7 @@
                                 <i class="fa fa-reply"></i>
                                 </a>
                             </li>
+                            <li class="reply"><a href="/comment?comm_id={{$elem.CommId}}&delete=true&redirect={{$.redirect}}"><i class="fa fa-trash-alt"></i></a></li>
                         </ul>
                     </div>
                 </div>
@@ -99,7 +100,7 @@
                             <form action="/comment" method="post">
                                 <textarea class="form-control" name="commentContent" cols="30" rows="3" placeholder="你的看法？"></textarea>
                                 <input type="hidden" name="blogId" value="{{$.blog.BlogId}}">
-                                <input type="hidden" name="fromUserId" value="{{$.user.UserId}}">
+                                <input type="hidden" name="fromUserId" value="{{$.thisUser.UserId}}">
                                 <input type="hidden" name="toUserId" id="toUserIdInput" value="{{$elem.CommFromUid}}">
                                 <input type="hidden" name="redirect" value="{{$.redirect}}">
                                 <div class="modal-footer form-group">

@@ -16,6 +16,14 @@ func GetAllComments(blogId int64) (comments []Comment) {
 	return
 }
 
+func GetCommentById(commId int64) Comment {
+	o := orm.NewOrm()
+	comment := Comment{CommId: commId}
+	err := o.Read(&comment)
+	util.CheckDBErr(err)
+	return comment
+}
+
 // not support emoji, and blog also.
 func SaveComment(comment *Comment) (commId int64, ok bool) {
 	o := orm.NewOrm()
@@ -29,11 +37,15 @@ func SaveComment(comment *Comment) (commId int64, ok bool) {
 	return
 }
 
-func DeleteComment(comment *Comment) (commId int64) {
+func DeleteComment(comment *Comment) (commId int64, ok bool) {
 	o := orm.NewOrm()
 	commId, err := o.Delete(comment)
-	util.CheckDBErr(err)
-	log.Println("new comment id: ", commId)
+	if err != nil {
+		log.Println(err.Error())
+		return 0, false
+	}
+	log.Println("delete comment id: ", commId)
+	ok = true
 	return
 }
 

@@ -13,9 +13,19 @@ type CommentController struct {
 	beego.Controller
 }
 
-//todo GET: //comment?comm_id=<id>&redirect=<pre url>
+// GET: comment?comm_id=<id>&delete=true&redirect=<pre url>
 func (this *CommentController) DeleteComment() {
-
+	delete := this.GetString("delete")
+	commId, ok := util.StringToInt64(this.GetString("comm_id"))
+	comment := models.GetCommentById(commId)
+	if delete != "true" || !ok {
+		goto error
+	}
+	if _, ok = models.DeleteComment(&comment); ok {
+		models.DecBlogComment(comment.CommBlogId)
+	}
+error:
+	util.Redirect302(this.GetString("redirect"), this.Ctx)
 }
 
 // POST: /comment
