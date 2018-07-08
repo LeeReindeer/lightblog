@@ -5,7 +5,9 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"github.com/LeeReindeer/lightblog/models"
+	"github.com/LeeReindeer/lightblog/util"
 	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 	"log"
 	"strconv"
 	"time"
@@ -16,18 +18,63 @@ type UserController struct {
 }
 
 // GET: /user/<username>, user detail
+// follow user: /user/<username>?follow=true
+// unfollow user: /user/<username>?unfollow=true
 func (this *UserController) Get() {
+	username := this.Ctx.Input.Params()[":username"]
+	redirectURL := this.Ctx.Input.URL()
 
+	loginUserId, ok := util.GetUserIdFromCookie(this.Ctx)
+	if !ok {
+		Logout(this.Ctx)
+		return
+	}
+	thatUser := models.GetUserByName(username)
+	thisUser := models.GetUserById(loginUserId)
+	if this.GetString("follow") != "" {
+		followUser(thisUser.UserId, thatUser.UserId)
+		util.Redirect302(redirectURL, this.Ctx)
+		return
+	}
+
+	if this.GetString("unfollow") != "" {
+		unfollowUser(thisUser.UserId, thatUser.UserId)
+		util.Redirect302(redirectURL, this.Ctx)
+		return
+	}
+	this.Data["thisUser"] = thisUser
+	this.Data["user"] = thatUser
+	this.Data["redirect"] = redirectURL
+	this.Data["blogs"] = models.GetBlogsByUid(thatUser.UserId)
+	this.Data["followed"] = models.IsUserFollow(thisUser.UserId, thatUser.UserId)
+	this.Layout = "layout.html"
+	this.TplName = "profile.html"
 }
 
-// Post: /user/<username>, update user
+func followUser(fromId, toId int64) {
+	if fromId == toId {
+		log.Println("you can't follow youself")
+		return
+	}
+	models.FollowUser(fromId, toId)
+}
+
+func unfollowUser(fromId, toId int64) {
+	if fromId == toId {
+		log.Println("you can't unfollow youself")
+		return
+	}
+	models.FollowUser(fromId, toId)
+}
+
+//abandon Post: /user/<username>, update user
 func (this *UserController) Post() {
 	//todo <input type="hidden" name="_method" value="PUT">
 	// handel delete here
 	//this.Delete()
 }
 
-// DELETE: /user/<username>, delete user
+//abandon DELETE: /user/<username>, delete user
 func (this *UserController) Delete() {
 
 }
@@ -89,6 +136,7 @@ func (this *UserController) GetLogin() {
 		this.Redirect("/", 302)
 		return
 	}
+	util.ClearCookies(this.Ctx)
 	flash := beego.ReadFromRequest(&this.Controller)
 	if _, ok := flash.Data["error"]; ok {
 		log.Println("login: show error flash")
@@ -122,10 +170,12 @@ func (this *UserController) LoginUser() {
 	}
 }
 
-func (this *UserController) LogoutUser() {
-	this.Ctx.SetCookie("username", "")
-	this.Ctx.SetCookie("login", "false")
-	this.Ctx.SetCookie("p", "")
-	this.Ctx.Redirect(302, "/login")
+func Logout(ctx *context.Context) {
+	util.ClearCookies(ctx)
+	ctx.Redirect(302, "/login")
 	log.Println("logout succeed")
+}
+
+func (this *UserController) LogoutUser() {
+	Logout(this.Ctx)
 }
