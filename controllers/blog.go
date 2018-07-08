@@ -26,7 +26,7 @@ func getBlogIdFromUrl(ctx *context.Context) (int64, bool) {
 	return int64(blogId), true
 }
 
-// GET: /blog/<id>
+// GET: /blog/<id>, delete a blog : GET: /blog/<id>?delete=true
 func (this *BlogController) DetailBlog() {
 	log.Println("URL: ", this.Ctx.Input.URL())
 	blogId, ok := getBlogIdFromUrl(this.Ctx)
@@ -36,6 +36,16 @@ func (this *BlogController) DetailBlog() {
 	}
 	log.Println("blog id: ", blogId)
 	lightBlog := models.GetBlogById(blogId)
+
+	if this.GetString("delete") != "" {
+		// check user login
+		if idFromC, _ := util.GetUserIdFromCookie(this.Ctx); idFromC == lightBlog.BlogUid {
+			models.DeleteBlog(blogId)
+		}
+		this.Redirect("/", 302)
+		return
+	}
+
 	this.Data["blog"] = lightBlog
 
 	comments := models.GetAllComments(blogId)

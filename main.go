@@ -32,8 +32,8 @@ func init() {
 	beego.Router("/user/:username([\\w]+)", &controllers.UserController{})
 
 	// view blog detail with comments, edit blog and delete blog
-	beego.Router("/blog/:id:int", &controllers.BlogController{},
-		"get:DetailBlog;put:EditBlog;delete:DeleteBlog")
+	beego.Router("/blog/:id:int", &controllers.BlogController{}, "get:DetailBlog")
+	beego.Router("blog/edit", &controllers.BlogController{}, "post:EditBlog")
 	// like or dislike blog: GET: /blog/like?id=1
 	beego.Router("/blog/like", &controllers.BlogController{}, "get:LikeBlog")
 	beego.Router("/blog/dislike", &controllers.BlogController{}, "get:DisLikeBlog")
