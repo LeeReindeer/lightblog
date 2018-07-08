@@ -1,0 +1,68 @@
+<div class="container" style="margin-top: 30px; margin-bottom: 20px;">
+    <div class="row">
+
+        <!--user detail-->
+        <div class="align-self-center col-lg-12" style="margin-top: 30px">
+            <center>
+                <img src="{{.user.UserAvatar}}" class="user-avatar" style="width: 128px;height: 128px; border-radius: 50%" />
+                <br>
+                <h4><span class="badge badge-primary">{{.user.UserName}}</span></h4>
+                <p class="text-primary">
+                    Bio:&nbsp;{{.user.UserBio}}
+                </p>
+                <button type="button" class="btn btn-primary">
+                    关注 <span class="badge badge-light">{{.user.UserFollowing}}</span>
+                </button>
+                <button type="button" class="btn btn-primary">
+                    粉丝 <span class="badge badge-light">{{.user.UserFollowers}}</span>
+                </button>
+                {{if ne .user.UserId .thisUser.UserId}}
+                {{if .followed}}
+                    <a href="/user/{{.user.UserName}}?unfollow=true" class="btn btn-secondary">取消关注</a>
+                {{else}}
+                    <a href="/user/{{.user.UserName}}?follow=true" class="btn btn-info">关注ta</a>
+                {{end}}
+                {{end}}
+            </center>
+        </div>
+        <!--user blogs-->
+        <div class="col-lg-12" style="margin-top: 30px">
+            <ul class="list-group blog-content">
+            {{range .blogs}}
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <a href="/user/{{.BlogUsername}}">
+                                <img src="{{.BlogUserAvatar}}" class="blog-avatar" />
+                            </a>
+                            <a href="/user/{{.BlogUsername}}">&nbsp;{{.BlogUsername}}</a>
+                        </div>
+                        <div class="col-lg-10">
+                            <br>
+                            <p class="text-left">
+                            {{.BlogPreview}}
+                            </p>
+                            <div class="float-right ml-2 mr-2">
+                                <span>
+                                    <a href="#">{{.BlogTimeString}}</a> |
+                                    <a href="/blog/{{.BlogId}}">详情</a>|</span>
+                                <span>
+                                    <a href="/blog/like?id={{.BlogId}}&redirect={{$.redirect}}">
+                                        <i class="fa fa-thumbs-up"></i>&nbsp;{{.BlogLike}}</a> |
+                                    <a href="/blog/dislike?id={{.BlogId}}&redirect={{$.redirect}}">
+                                        <i class="fa fa-thumbs-down"></i>&nbsp;{{.BlogUnlike}}</a> |
+                                    <a href="#">
+                                        <i class="fa fa-comments"></i>&nbsp;{{.BlogComment}}</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {{end}}
+            </ul>
+            {{if not .blogs}}
+                <p class="text-primary text-lg-center">ta 什么也没留下</p>
+            {{end}}
+        </div>
+    </div>
+</div>
