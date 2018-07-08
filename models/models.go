@@ -10,6 +10,7 @@ import (
 type Blog struct {
 	BlogId      int64 `orm:"pk"`
 	BlogUid     int64
+	BlogTagId   int64
 	BlogContent string
 	BlogTime    time.Time
 
@@ -26,6 +27,7 @@ const (
 type LightBlog struct {
 	Blog
 	//extra for convenience
+	Tag                   //标签结构体
 	BlogPreview    string //博客简述，取前140个字符
 	BlogUsername   string
 	BlogUserAvatar string
@@ -74,9 +76,9 @@ type Comment struct {
 }
 
 type Tag struct {
-	TagId    int64 `orm:"pk"`
-	TagName  string
-	TageTime time.Time
+	TagId   int64 `orm:"pk"`
+	TagName string
+	TagTime time.Time
 }
 
 func init() {
