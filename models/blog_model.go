@@ -5,6 +5,7 @@ import (
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
 	"log"
+	"time"
 )
 
 func GetTimeLineByUid(uid int64) (blogs []LightBlog) {
@@ -86,6 +87,15 @@ func SaveBlog(blog *Blog) int64 {
 	return id
 }
 
+// blog in param must have BlogId, BlogContent
+// so, this update BlogContent and BlogTime
+func UpdateBlog(blog *Blog) {
+	o := orm.NewOrm()
+	blog.BlogTime = time.Now()
+	_, err := o.Update(blog, "BlogContent", "BlogTime")
+	util.CheckDBErr(err)
+}
+
 func DeleteBlog(blogId int64) int64 {
 	o := orm.NewOrm()
 	blog := Blog{BlogId: blogId}
@@ -99,7 +109,10 @@ func DeleteBlog(blogId int64) int64 {
 func IncLikeBlog(blogId, uid int64) {
 	db, err := orm.GetDB()
 	_, err = db.Exec("UPDATE blog SET blog_like=blog_like+1 WHERE blog_id=?", blogId)
-	util.CheckDBErr(err)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
 
 	_, err = db.Exec("INSERT INTO blog_counter VALUES(?, ?, ?)", blogId, uid, LIKE_COUNT)
 	util.CheckDBErr(err)
@@ -122,7 +135,10 @@ func DecLikeBlog(blogId int64, uid int64) {
 	log.Println("like count: ", like)
 	if like > 0 {
 		_, err = db.Exec("UPDATE blog SET blog_like=blog_like-1 WHERE blog_id=?", blogId)
-		util.CheckDBErr(err)
+		if err != nil {
+			log.Println(err.Error())
+			return
+		}
 		_, err = db.Exec("DELETE FROM blog_counter WHERE blog_id=? AND user_id=? AND count_type=?", blogId, uid, LIKE_COUNT)
 		util.CheckDBErr(err)
 	} else {
@@ -145,7 +161,10 @@ func IsUserLikeBlog(blogId, uid int64) bool {
 func IncUnlikeBlog(blogId, uid int64) {
 	db, err := orm.GetDB()
 	_, err = db.Exec("UPDATE blog SET blog_unlike=blog_unlike+1 WHERE blog_id=?", blogId)
-	util.CheckDBErr(err)
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
 
 	_, err = db.Exec("INSERT INTO blog_counter VALUES(?, ?, ?)", blogId, uid, UNLIKE_COUNT)
 	util.CheckDBErr(err)
@@ -160,7 +179,10 @@ func DecUnlikeBlog(blogId, uid int64) {
 		rows.Scan(&unlike)
 		if unlike > 0 {
 			_, err = db.Exec("UPDATE blog SET blog_unlike=blog_unlike-1 WHERE blog_id=?", blogId)
-			util.CheckDBErr(err)
+			if err != nil {
+				log.Println(err.Error())
+				return
+			}
 			_, err = db.Exec("DELETE FROM blog_counter WHERE blog_id=? AND user_id=? AND count_type=?", blogId, uid, UNLIKE_COUNT)
 			util.CheckDBErr(err)
 		} else {

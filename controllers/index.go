@@ -62,7 +62,8 @@ func (this *IndexController) NewLight() {
 	log.Println("new blog")
 	content := this.GetString("content")
 	uid, err := strconv.Atoi(this.Ctx.GetCookie("uid"))
-	if err != nil {
+	// content can not be empty
+	if err != nil || content == "" {
 		this.Redirect("/", 302)
 		return
 	}

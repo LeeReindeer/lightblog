@@ -13,11 +13,23 @@ type BlogController struct {
 	beego.Controller
 }
 
+// get blogId from "/blog/<id>"
 func getBlogIdFromUrl(ctx *context.Context) (int64, bool) {
 	blogIdStr := ctx.Input.Param(":id")
 	if len(blogIdStr) == 0 {
 		return 0, false
 	}
+	blogId, err := strconv.Atoi(blogIdStr)
+	if err != nil {
+		log.Println(err.Error())
+		return 0, false
+	}
+	return int64(blogId), true
+}
+
+// get blogId from "/blog?id=<id>"
+func getBloIdFromParams(this *BlogController) (int64, bool) {
+	blogIdStr := this.GetString("id")
 	blogId, err := strconv.Atoi(blogIdStr)
 	if err != nil {
 		log.Println(err.Error())
@@ -64,35 +76,56 @@ func (this *BlogController) DetailBlog() {
 	this.TplName = "detail.html"
 }
 
-// POST: /blog/<id>
-func (this *BlogController) EditBlog() {
-
+// edit blog, GET: /blog/edit?id=<id>&redirect=<url>
+func (this *BlogController) GetEditBlog() {
+	this.Layout = "layout.html"
+	this.TplName = "edit_blog.html"
+	blogId, ok := getBloIdFromParams(this)
+	if !ok {
+		util.Redirect302(this.GetString("redirect"), this.Ctx)
+		return
+	}
+	lightBlog := models.GetBlogById(blogId)
+	this.Data["blog"] = lightBlog
 }
 
-// DELETE: /blog/<id>
-func (this *BlogController) DeleteBlog() {
-
+// edit blog POST: /blog/edit?id=<id>&redirect=
+func (this *BlogController) EditBlog() {
+	// get from form
+	content := this.GetString("content")
+	if content == "" {
+		util.Redirect302(this.GetString("redirect"), this.Ctx)
+		return
+	}
+	id, ok := getBloIdFromParams(this)
+	if ok {
+		blog := models.Blog{BlogId: id, BlogContent: content}
+		models.UpdateBlog(&blog)
+	}
+	util.Redirect302(this.GetString("redirect"), this.Ctx)
 }
 
 // GET: /blog/like?id=<id>&redirect=<url>
 // GET: /blog/like?id=<id>
 func (this *BlogController) LikeBlog() {
-	uid, _ := strconv.Atoi(this.Ctx.GetCookie("uid"))
-	blogIdStr := this.GetString("id")
-	blogId, err := strconv.Atoi(blogIdStr)
-	if err != nil {
-		log.Println(err.Error())
-		return
+	uid, ok := util.GetUserIdFromCookie(this.Ctx)
+	blogId, liked := int64(0), false
+	if !ok {
+		goto error
+	}
+	blogId, ok = getBloIdFromParams(this)
+	if !ok {
+		goto error
 	}
 
-	liked := models.IsUserLikeBlog(int64(blogId), int64(uid))
+	liked = models.IsUserLikeBlog(blogId, uid)
 	log.Printf("user%d liked blog%d? %v", uid, blogId, liked)
 	if liked {
-		models.DecLikeBlog(int64(blogId), int64(uid))
+		models.DecLikeBlog(blogId, uid)
 	} else {
-		models.IncLikeBlog(int64(blogId), int64(uid))
+		models.IncLikeBlog(blogId, uid)
 	}
-
+error:
 	this.Redirect(this.GetString("redirect"), 302)
 }
 

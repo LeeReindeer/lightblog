@@ -1,0 +1,16 @@
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12 align-items-center align-self-center">
+            <!--new blog-->
+            <form class="form-group blog-form" method="post" action="">
+                <div class="form-group row">
+                    <textarea class="form-control" name="content" rows="7">{{.blog.BlogContent}}</textarea>
+                </div>
+                <div class="form-group row float-right">
+                    <input type="submit" class="btn btn-primary" value="修改" />&nbsp;&nbsp;
+                    <a class="btn btn-secondary" href="/blog/{{.blog.BlogId}}">取消</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

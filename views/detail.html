@@ -29,7 +29,7 @@
                                     <a href="#">
                                         <i class="fa fa-comments"></i>&nbsp;{{.blog.BlogComment}}</a>|
                                     {{if eq .user.UserId .blog.BlogUid}}
-                                        <a href="/blog/edit?id={{.blog.BlogId}}" class="text-info">编辑</a>|
+                                        <a href="/blog/edit?id={{.blog.BlogId}}&redirect={{.redirect}}" class="text-info">编辑</a>|
                                         <a href="/blog/{{.blog.BlogId}}?delete=true" class="text-danger">删除</a>
                                     {{end}}
                                 </span>
