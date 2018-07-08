@@ -51,9 +51,9 @@ func (this *CommentController) NewComment() {
 
 	comment = &models.Comment{CommBlogId: blogId, CommFromUid: fromUserId, CommToUid: int64(toUserId), CommContent: content, CommTime: time.Now(),
 		CommFromName: fromUser.UserName, CommFromAvatar: fromUser.UserAvatar, CommToName: toUser.UserName, CommToAvatar: toUser.UserAvatar}
-	models.SaveComment(comment)
-	models.IncBlogComment(blogId)
-
+	if _, ok := models.SaveComment(comment); ok {
+		models.IncBlogComment(blogId)
+	}
 	this.Redirect(this.GetString("redirect"), 302)
 }
 

@@ -16,11 +16,16 @@ func GetAllComments(blogId int64) (comments []Comment) {
 	return
 }
 
-func SaveComment(comment *Comment) (commId int64) {
+// not support emoji, and blog also.
+func SaveComment(comment *Comment) (commId int64, ok bool) {
 	o := orm.NewOrm()
 	commId, err := o.Insert(comment)
-	util.CheckDBErr(err)
+	if err != nil {
+		log.Println(err.Error())
+		return 0, false
+	}
 	log.Println("new comment id: ", commId)
+	ok = true
 	return
 }
 
