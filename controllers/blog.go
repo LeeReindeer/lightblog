@@ -68,7 +68,7 @@ func (this *BlogController) DetailBlog() {
 		util.ClearCookies(this.Ctx)
 		this.Redirect("/login", 302)
 	}
-	this.Data["user"] = models.GetUserById(uid)
+	this.Data["thisUser"] = models.GetUserById(uid)
 	this.Data["redirect"] = this.Ctx.Input.URL()
 
 	//log.Println("test: ", this.GetString("id"))

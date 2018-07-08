@@ -28,7 +28,7 @@
                                         <i class="fa fa-thumbs-down"></i>&nbsp;{{.blog.BlogUnlike}}</a> |
                                     <a href="#">
                                         <i class="fa fa-comments"></i>&nbsp;{{.blog.BlogComment}}</a>|
-                                    {{if eq .user.UserId .blog.BlogUid}}
+                                    {{if eq .thisUser.UserId .blog.BlogUid}}
                                         <a href="/blog/edit?id={{.blog.BlogId}}&redirect={{.redirect}}" class="text-info">编辑</a>|
                                         <a href="/blog/{{.blog.BlogId}}?delete=true" class="text-danger">删除</a>
                                     {{end}}
@@ -43,14 +43,14 @@
         <div class="col-md-12 align-self-center comments">
             <div class="comment-wrap">
                 <div class="photo">
-                    <div class="avatar" style="background-image: url('{{.user.UserAvatar}}')"></div>
+                    <div class="avatar" style="background-image: url('{{.thisUser.UserAvatar}}')"></div>
                 </div>
                 {{/*comment to blog*/}}
                 <div class="comment-block">
                     <form action="/comment" method="post">
                         <textarea name="commentContent" cols="30" rows="3" placeholder="你的看法？"></textarea>
                         <input type="hidden" name="blogId" value="{{.blog.BlogId}}">
-                        <input type="hidden" name="fromUserId" value="{{.user.UserId}}">
+                        <input type="hidden" name="fromUserId" value="{{.thisUser.UserId}}">
                         <input type="hidden" name="redirect" value="{{.redirect}}">
                         <button type="submit" class="btn btn-info float-right">
                             <i class="far fa-paper-plane">发送</i>
