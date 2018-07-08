@@ -68,6 +68,13 @@ func (this *IndexController) NewLight() {
 		return
 	}
 	blog := models.Blog{BlogUid: int64(uid), BlogContent: content, BlogTime: time.Now()}
+	tagName, hasTag, contentIndex := util.GetContentTag(content)
+	if hasTag {
+		log.Println("blog has tag")
+		tagId, _ := models.SaveTag(&models.Tag{TagName: tagName, TagTime: time.Now()})
+		blog.BlogTagId = tagId
+		blog.BlogContent = content[contentIndex:]
+	}
 	models.SaveBlog(&blog)
 	this.Redirect("/", 302)
 }

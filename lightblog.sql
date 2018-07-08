@@ -97,7 +97,7 @@ CREATE TABLE fan_follow (
 DROP TABLE IF EXISTS tag;
 CREATE TABLE tag (
   tag_id INT AUTO_INCREMENT PRIMARY KEY,
-  tag_name VARCHAR(10) UNIQUE NOT NULL, #标签名称，限制10个字符
+  tag_name VARCHAR(25) UNIQUE NOT NULL, #标签名称，限制10个字符
   tag_time DATETIME #标签创建的时间
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
