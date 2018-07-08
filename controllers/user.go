@@ -32,12 +32,14 @@ func (this *UserController) Get() {
 	thatUser := models.GetUserByName(username)
 	thisUser := models.GetUserById(loginUserId)
 	if this.GetString("follow") != "" {
+		log.Println("handle follow")
 		followUser(thisUser.UserId, thatUser.UserId)
 		util.Redirect302(redirectURL, this.Ctx)
 		return
 	}
 
 	if this.GetString("unfollow") != "" {
+		log.Println("handle unfollow")
 		unfollowUser(thisUser.UserId, thatUser.UserId)
 		util.Redirect302(redirectURL, this.Ctx)
 		return
@@ -64,7 +66,7 @@ func unfollowUser(fromId, toId int64) {
 		log.Println("you can't unfollow youself")
 		return
 	}
-	models.FollowUser(fromId, toId)
+	models.UnFollowUser(fromId, toId)
 }
 
 //abandon Post: /user/<username>, update user
