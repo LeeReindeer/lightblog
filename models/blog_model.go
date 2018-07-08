@@ -40,6 +40,9 @@ func GetTimeLineByUidWithPaging(uid int64, page int) (blogs []LightBlog) {
 			util.CheckDBErr(err)
 			userMap[user.UserId] = &user
 		}
+		if blogs[i].BlogTagId != 0 {
+			blogs[i].Tag = *GetTagById(blogs[i].BlogTagId)
+		}
 		blogs[i].BlogPreview = getBlogPreview(blogs[i].BlogContent)
 		blogs[i].BlogTimeString = blogs[i].BlogTime.Format("2006-01-02 15:04:05")
 		blogs[i].BlogUsername = userMap[uid].UserName
@@ -72,6 +75,10 @@ func GetBlogById(id int64) (lightblog LightBlog) {
 	util.CheckDBErr(err)
 
 	// fill
+	if lightblog.BlogTagId != 0 {
+		lightblog.Tag = *GetTagById(lightblog.BlogTagId)
+		log.Println("tag name: ", lightblog.TagName)
+	}
 	lightblog.BlogPreview = getBlogPreview(blog.BlogContent)
 	lightblog.BlogTimeString = blog.BlogTime.Format("2006-01-02 15:04:05")
 	lightblog.BlogUsername = user.UserName
@@ -90,6 +97,9 @@ func GetBlogsByUid(uid int64) (blogs []LightBlog) {
 	err = o.Read(&user)
 	util.CheckDBErr(err)
 	for i, _ := range blogs {
+		if blogs[i].BlogTagId != 0 {
+			blogs[i].Tag = *GetTagById(blogs[i].BlogTagId)
+		}
 		blogs[i].BlogPreview = getBlogPreview(blogs[i].BlogContent)
 		blogs[i].BlogTimeString = blogs[i].BlogTime.Format("2006-01-02 15:04:05")
 		blogs[i].BlogUsername = user.UserName

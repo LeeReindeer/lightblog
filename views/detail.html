@@ -15,6 +15,11 @@
                         <div class="col-lg-10">
                             <br>
                             <p class="text-left">
+                            {{if ne 0 .blog.BlogTagId}}
+                                <a href="/tag/{{.blog.BlogTagId}}"class="badge-pill badge-primary">
+                                    #{{.blog.TagName}}
+                                </a>&nbsp;
+                            {{end}}
                             {{.blog.BlogContent}}
                             </p>
                             <div class="float-right ml-2 mr-2">
