@@ -22,7 +22,8 @@ CREATE TABLE user (
 DROP TABLE IF EXISTS blog;
 CREATE TABLE blog (
   blog_id INT AUTO_INCREMENT PRIMARY KEY,
-  blog_uid INT, # 作者 id
+  blog_uid INT NOT NULL, # 作者 id
+  blog_tag_id INT, # 博客标签，一篇博客只有一个标签
   blog_content VARCHAR(1000), # lightblog 字数限制 1k
   blog_time DATETIME, #微博发布时间
 
@@ -31,8 +32,8 @@ CREATE TABLE blog (
   blog_comment INT, #评论数量
 
   FOREIGN KEY (blog_uid)
-      REFERENCES user(user_id)
-      ON DELETE NO ACTION
+    REFERENCES user(user_id)
+    ON DELETE NO ACTION
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 # 点赞/反对 用户表
@@ -96,20 +97,20 @@ CREATE TABLE fan_follow (
 DROP TABLE IF EXISTS tag;
 CREATE TABLE tag (
   tag_id INT AUTO_INCREMENT PRIMARY KEY,
-  tag_name VARCHAR(10), #标签名称，限制10个字符
+  tag_name VARCHAR(10) UNIQUE NOT NULL, #标签名称，限制10个字符
   tag_time DATETIME #标签创建的时间
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-# 标签博客关系表
-DROP TABLE IF EXISTS taged_blog;
-CREATE TABLE taged_blog (
-  blog_id INT,
-  tag_id INT,
-
-  FOREIGN KEY (blog_id)
-    REFERENCES blog(blog_id)
-    ON DELETE NO ACTION,
-  FOREIGN KEY (tag_id)
-    REFERENCES tag(tag_id)
-    ON DELETE NO ACTION
-)ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+# abandoned 标签博客关系表
+# DROP TABLE IF EXISTS taged_blog;
+# CREATE TABLE taged_blog (
+#   blog_id INT,
+#   tag_id INT,
+#
+#   FOREIGN KEY (blog_id)
+#     REFERENCES blog(blog_id)
+#     ON DELETE NO ACTION,
+#   FOREIGN KEY (tag_id)
+#     REFERENCES tag(tag_id)
+#     ON DELETE NO ACTION
+# )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
