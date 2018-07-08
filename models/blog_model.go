@@ -79,6 +79,25 @@ func GetBlogById(id int64) (lightblog LightBlog) {
 	return
 }
 
+func GetBlogsByUid(uid int64) (blogs []LightBlog) {
+	o := orm.NewOrm()
+	_, err := o.Raw("SELECT * FROM blog WHERE blog_uid=? ORDER BY blog_time DESC", uid).QueryRows(&blogs)
+	if err != nil {
+		return nil
+	}
+	user := User{UserId: uid}
+	// only read a user once
+	err = o.Read(&user)
+	util.CheckDBErr(err)
+	for i, _ := range blogs {
+		blogs[i].BlogPreview = getBlogPreview(blogs[i].BlogContent)
+		blogs[i].BlogTimeString = blogs[i].BlogTime.Format("2006-01-02 15:04:05")
+		blogs[i].BlogUsername = user.UserName
+		blogs[i].BlogUserAvatar = user.UserAvatar
+	}
+	return
+}
+
 func SaveBlog(blog *Blog) int64 {
 	o := orm.NewOrm()
 	id, err := o.Insert(blog)
@@ -214,20 +233,3 @@ func DecBlogComment(blogId int64) {
 }
 
 /**counter func end**/
-
-//
-//func UpdateBlog(blog Blog) {
-//	stmt, err := DB.Prepare("UPDATE blog SET blog_content=? WHERE blog_id=?")
-//	util.CheckDBErr(err)
-//
-//	_, err = stmt.Exec(blog.BlogContent, blog.BlogId)
-//	util.CheckDBErr(err)
-//}
-//
-//func DeleteBlogById(id int) {
-//	stmt, err := DB.Prepare("DELETE FROM blog WHERE blog_id=?")
-//	util.CheckDBErr(err)
-//
-//	_, err = stmt.Exec(id)
-//	util.CheckDBErr(err)
-//}
