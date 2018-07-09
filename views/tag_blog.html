@@ -1,0 +1,52 @@
+<!--show blogs with this tag-->
+<div class="container">
+    <div class="row">
+        <!--tag-->
+        <div class="col-lg-12 align-self-center" style="margin-top: 30px">
+            <h2 class="text-center">
+                #{{.tag.TagName}}
+            </h2>
+        </div>
+        <!--blogs-->
+        <div class="col-lg-12" style="margin-top: 30px">
+            <ul class="list-group blog-content">
+            {{range .blogs}}
+                <li class="list-group-item">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <a href="/user/{{.BlogUsername}}">
+                                <img src="{{.BlogUserAvatar}}" class="blog-avatar" />
+                            </a>
+                            <a href="/user/{{.BlogUsername}}">&nbsp;{{.BlogUsername}}</a>
+                        </div>
+                        <div class="col-lg-10">
+                            <br>
+                            <p class="text-left">
+                            {{if ne 0 .BlogTagId}}
+                                <a href="/tag/{{.BlogTagId}}"class="badge-pill badge-primary">
+                                    #{{.TagName}}
+                                </a>&nbsp;
+                            {{end}}
+                            {{.BlogPreview}}
+                            </p>
+                            <div class="float-right ml-2 mr-2">
+                                <span>
+                                    <a href="#">{{.BlogTimeString}}</a> |
+                                    <a href="/blog/{{.BlogId}}">详情</a>|</span>
+                                <span>
+                                    <a href="/blog/like?id={{.BlogId}}&redirect={{$.redirect}}">
+                                        <i class="fa fa-thumbs-up"></i>&nbsp;{{.BlogLike}}</a> |
+                                    <a href="/blog/dislike?id={{.BlogId}}&redirect={{$.redirect}}">
+                                        <i class="fa fa-thumbs-down"></i>&nbsp;{{.BlogUnlike}}</a> |
+                                    <a href="#">
+                                        <i class="fa fa-comments"></i>&nbsp;{{.BlogComment}}</a>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            {{end}}
+            </ul>
+        </div>
+    </div>
+</div>
