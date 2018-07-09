@@ -9,9 +9,6 @@ import (
 )
 
 func init() {
-	// todo remove when release
-	orm.Debug = true
-
 	err := orm.RegisterDriver("mysql", orm.DRMySQL)
 	util.CheckAndFatal(err)
 	err = orm.RegisterDataBase("default", "mysql",

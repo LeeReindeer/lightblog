@@ -12,7 +12,7 @@ type TagController struct {
 	beego.Controller
 }
 
-// GET:/tag/
+//todo GET:/tag/
 func (this *TagController) ShowAllTags() {
 
 }
