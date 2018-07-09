@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/base64"
 	"github.com/LeeReindeer/lightblog/models"
 	"github.com/LeeReindeer/lightblog/util"
 	"github.com/astaxie/beego"
@@ -19,6 +20,7 @@ func (this *IndexController) TimeLine() {
 	uid, login := CheckLogin(this.Ctx)
 	log.Println("uid: ", uid)
 	if !login {
+		log.Println("you're not login")
 		util.ClearCookies(this.Ctx)
 		this.Redirect("/login", 302)
 		return
@@ -35,7 +37,13 @@ func (this *IndexController) TimeLine() {
 }
 
 func CheckLogin(ctx *context.Context) (int64, bool) {
-	name := ctx.GetCookie("username")
+	nameEncoded := ctx.GetCookie("username")
+	nameByte, err := base64.StdEncoding.DecodeString(nameEncoded)
+	if err != nil {
+		return 0, false
+	}
+	name := string(nameByte)
+	log.Println("name from cookie: ", name)
 	passHash := models.GetPassHashByName(name)
 	passHashFromCookie, ok := ctx.GetSecureCookie(passHash, "p")
 

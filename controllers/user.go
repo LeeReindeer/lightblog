@@ -3,6 +3,7 @@ package controllers
 import (
 	"crypto/hmac"
 	"crypto/sha1"
+	"encoding/base64"
 	"fmt"
 	"github.com/LeeReindeer/lightblog/models"
 	"github.com/LeeReindeer/lightblog/util"
@@ -44,6 +45,7 @@ func (this *UserController) Get() {
 		util.Redirect302(redirectURL, this.Ctx)
 		return
 	}
+	this.Data["title"] = username
 	this.Data["thisUser"] = thisUser
 	this.Data["user"] = thatUser
 	this.Data["redirect"] = redirectURL
@@ -157,8 +159,9 @@ func (this *UserController) LoginUser() {
 	log.Println("username: ", username)
 	log.Println("password: ", pass)
 	if h == models.GetPassHashByName(username) {
-		this.Ctx.SetCookie("username", username)
+		this.Ctx.SetCookie("username", base64.StdEncoding.EncodeToString([]byte(username)))
 		uid := models.GetUserByName(username).UserId
+		log.Println(models.GetUserByName(username))
 		this.Ctx.SetCookie("uid", strconv.FormatInt(uid, 10))
 		this.Ctx.SetSecureCookie(h, "p", h)
 		this.Ctx.SetCookie("login", "true")
