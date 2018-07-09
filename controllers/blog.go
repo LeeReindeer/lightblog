@@ -15,16 +15,7 @@ type BlogController struct {
 
 // get blogId from "/blog/<id>"
 func getBlogIdFromUrl(ctx *context.Context) (int64, bool) {
-	blogIdStr := ctx.Input.Param(":id")
-	if len(blogIdStr) == 0 {
-		return 0, false
-	}
-	blogId, err := strconv.Atoi(blogIdStr)
-	if err != nil {
-		log.Println(err.Error())
-		return 0, false
-	}
-	return int64(blogId), true
+	return util.GetIdFromUrl(ctx, "id")
 }
 
 // get blogId from "/blog?id=<id>"

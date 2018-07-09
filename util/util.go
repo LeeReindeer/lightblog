@@ -81,3 +81,16 @@ func IsContentTagged(content string) bool {
 	//log.Println("tagged: ", strings.HasPrefix(content, "#"))
 	return strings.HasPrefix(content, "#") && index <= 25 && index > 1
 }
+
+func GetIdFromUrl(ctx *context.Context, key string) (int64, bool) {
+	idStr := ctx.Input.Param(":" + key)
+	if len(idStr) == 0 {
+		return 0, false
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		log.Println(err.Error())
+		return 0, false
+	}
+	return int64(id), true
+}
