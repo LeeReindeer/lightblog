@@ -32,7 +32,6 @@ func GetTimeLineByUidWithPaging(uid int64, page int) []LightBlog {
 	blogs := make([]LightBlog, 20)
 	count := 0
 	for ; rows.Next(); count++ {
-		log.Println("scan: ", count)
 		err := rows.Scan(&blogs[count].BlogId, &blogs[count].BlogUid, &blogs[count].BlogTagId, &blogs[count].BlogContent,
 			&blogs[count].BlogTime, &blogs[count].BlogLike, &blogs[count].BlogUnlike, &blogs[count].BlogComment,
 			&blogs[count].BlogUsername, &blogs[count].BlogUserAvatar)
@@ -42,13 +41,13 @@ func GetTimeLineByUidWithPaging(uid int64, page int) []LightBlog {
 	}
 	blogs = blogs[:count]
 
+	local, _ := time.LoadLocation("Asia/Shanghai")
 	for i, _ := range blogs {
-		log.Println(blogs[i].BlogUsername)
 		if blogs[i].BlogTagId != 0 {
 			blogs[i].Tag = *GetTagById(blogs[i].BlogTagId)
 		}
 		blogs[i].BlogPreview = getBlogPreview(blogs[i].BlogContent)
-		blogs[i].BlogTimeString = blogs[i].BlogTime.Format("2006-01-02 15:04:05")
+		blogs[i].BlogTimeString = blogs[i].BlogTime.In(local).Format("2006-01-02 15:04:05")
 	}
 	return blogs
 }
