@@ -101,16 +101,10 @@ CREATE TABLE tag (
   tag_time DATETIME #标签创建的时间
 )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-# abandoned 标签博客关系表
-# DROP TABLE IF EXISTS taged_blog;
-# CREATE TABLE taged_blog (
-#   blog_id INT,
-#   tag_id INT,
-#
-#   FOREIGN KEY (blog_id)
-#     REFERENCES blog(blog_id)
-#     ON DELETE NO ACTION,
-#   FOREIGN KEY (tag_id)
-#     REFERENCES tag(tag_id)
-#     ON DELETE NO ACTION
-# )ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+# blog 详情 视图
+CREATE VIEW blogdetail AS
+SELECT blog_id, blog_uid, blog_tag_id, blog_content, blog_time, blog_like, blog_unlike, blog_comment,
+  user_name AS blog_user_name, user_avatar AS blog_user_avatar
+FROM blog, user
+WHERE blog.blog_uid = user.user_id;
+
