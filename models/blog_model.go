@@ -8,10 +8,6 @@ import (
 	"time"
 )
 
-func GetTimeLineByUid(uid int64) (blogs []LightBlog) {
-	return GetTimeLineByUidWithPaging(uid, 1)
-}
-
 func getBlogPreview(content string) (preview string) {
 	contentRune := []rune(content)
 	if len(contentRune) > 140 {
@@ -22,31 +18,24 @@ func getBlogPreview(content string) (preview string) {
 	return
 }
 
+func GetTimeLineByUid(uid int64) (blogs []LightBlog) {
+	return GetTimeLineByUidWithPaging(uid, 1)
+}
+
 // every page has 20 blog
 // page start from 1
 func GetTimeLineByUidWithPaging(uid int64, page int) (blogs []LightBlog) {
 	o := orm.NewOrm()
-	_, err := o.Raw("SELECT * FROM blog WHERE blog_uid IN "+
+	_, err := o.Raw("SELECT * FROM blogdetail WHERE blog_uid IN "+
 		"(SELECT user_to FROM fan_follow WHERE user_from = ?) OR blog_uid= ? ORDER BY blog_time DESC LIMIT ?, ?", uid, uid, (page-1)*20, 20).QueryRows(&blogs)
 	util.CheckDBErr(err)
 
-	userMap := make(map[int64]*User)
 	for i, _ := range blogs {
-		uid := blogs[i].BlogUid
-		if userMap[uid] == nil {
-			user := User{UserId: uid}
-			// only read a user once
-			err = o.Read(&user)
-			util.CheckDBErr(err)
-			userMap[user.UserId] = &user
-		}
 		if blogs[i].BlogTagId != 0 {
 			blogs[i].Tag = *GetTagById(blogs[i].BlogTagId)
 		}
 		blogs[i].BlogPreview = getBlogPreview(blogs[i].BlogContent)
 		blogs[i].BlogTimeString = blogs[i].BlogTime.Format("2006-01-02 15:04:05")
-		blogs[i].BlogUsername = userMap[uid].UserName
-		blogs[i].BlogUserAvatar = userMap[uid].UserAvatar
 	}
 	return
 }
@@ -61,6 +50,27 @@ func GetTimeLineCount(uid int64) (count int64) {
 		return 0
 	}
 	return nums
+}
+
+func GetBlogDetailFromView(id int64) (lightblog LightBlog) {
+	db, _ := orm.GetDB()
+	row := db.QueryRow("select * from blogdetail where blog_id=?", id)
+
+	err := row.Scan(&lightblog.BlogId, &lightblog.BlogUid, &lightblog.BlogTagId, &lightblog.BlogContent,
+		&lightblog.BlogTime, &lightblog.BlogLike, &lightblog.BlogUnlike, &lightblog.BlogComment,
+		&lightblog.BlogUsername, &lightblog.BlogUserAvatar)
+
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	lightblog.BlogPreview = getBlogPreview(lightblog.BlogContent)
+	lightblog.BlogTimeString = lightblog.BlogTime.Format("2006-01-02 15:04:05")
+	if lightblog.BlogTagId != 0 {
+		lightblog.Tag = *GetTagById(lightblog.BlogTagId)
+		log.Println("tag name: ", lightblog.TagName)
+	}
+	return
 }
 
 func GetBlogById(id int64) (lightblog LightBlog) {
@@ -88,22 +98,17 @@ func GetBlogById(id int64) (lightblog LightBlog) {
 
 func GetBlogsByUid(uid int64) (blogs []LightBlog) {
 	o := orm.NewOrm()
-	_, err := o.Raw("SELECT * FROM blog WHERE blog_uid=? ORDER BY blog_time DESC", uid).QueryRows(&blogs)
+	_, err := o.Raw("SELECT * FROM blogdetail WHERE blog_uid=? ORDER BY blog_time DESC", uid).QueryRows(&blogs)
 	if err != nil {
 		return nil
 	}
-	user := User{UserId: uid}
-	// only read a user once
-	err = o.Read(&user)
-	util.CheckDBErr(err)
+	log.Println("wow")
 	for i, _ := range blogs {
 		if blogs[i].BlogTagId != 0 {
 			blogs[i].Tag = *GetTagById(blogs[i].BlogTagId)
 		}
 		blogs[i].BlogPreview = getBlogPreview(blogs[i].BlogContent)
 		blogs[i].BlogTimeString = blogs[i].BlogTime.Format("2006-01-02 15:04:05")
-		blogs[i].BlogUsername = user.UserName
-		blogs[i].BlogUserAvatar = user.UserAvatar
 	}
 	return
 }

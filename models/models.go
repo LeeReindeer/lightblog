@@ -34,6 +34,12 @@ type LightBlog struct {
 	BlogTimeString string
 }
 
+func (lightblog LightBlog) String() string {
+	return fmt.Sprintf("id: %d, content: %s, time: %s, user_name: %s, tag_name: %s", lightblog.BlogId,
+		lightblog.BlogContent, lightblog.BlogTime.Format("2006-01-02 15:04:05"),
+		lightblog.BlogUsername, lightblog.Tag.TagName)
+}
+
 func (blog Blog) String() string {
 	return fmt.Sprintf("[%d] creator:%d, created:%s, content:%s",
 		blog.BlogId, blog.BlogUid, blog.BlogTime.Format("2006-01-02 15:04:05"), blog.BlogContent)
