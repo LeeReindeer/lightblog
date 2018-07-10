@@ -38,7 +38,7 @@ func (this *BlogController) DetailBlog() {
 		return
 	}
 	log.Println("blog id: ", blogId)
-	lightBlog := models.GetBlogById(blogId)
+	lightBlog := models.GetBlogDetailFromView(blogId)
 
 	if this.GetString("delete") != "" {
 		// check user login
@@ -76,7 +76,7 @@ func (this *BlogController) GetEditBlog() {
 		util.Redirect302(this.GetString("redirect"), this.Ctx)
 		return
 	}
-	lightBlog := models.GetBlogById(blogId)
+	lightBlog := models.GetBlogDetailFromView(blogId)
 	this.Data["blog"] = lightBlog
 }
 

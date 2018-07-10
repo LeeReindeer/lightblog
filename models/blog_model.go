@@ -24,20 +24,33 @@ func GetTimeLineByUid(uid int64) (blogs []LightBlog) {
 
 // every page has 20 blog
 // page start from 1
-func GetTimeLineByUidWithPaging(uid int64, page int) (blogs []LightBlog) {
-	o := orm.NewOrm()
-	_, err := o.Raw("SELECT * FROM blogdetail WHERE blog_uid IN "+
-		"(SELECT user_to FROM fan_follow WHERE user_from = ?) OR blog_uid= ? ORDER BY blog_time DESC LIMIT ?, ?", uid, uid, (page-1)*20, 20).QueryRows(&blogs)
-	util.CheckDBErr(err)
+func GetTimeLineByUidWithPaging(uid int64, page int) []LightBlog {
+	db, _ := orm.GetDB()
+	rows, _ := db.Query("SELECT * FROM blogdetail WHERE blog_uid IN "+
+		"(SELECT user_to FROM fan_follow WHERE user_from = ?) OR blog_uid= ? ORDER BY blog_time DESC LIMIT ?, ?", uid, uid, (page-1)*20, 20)
+
+	blogs := make([]LightBlog, 20)
+	count := 0
+	for ; rows.Next(); count++ {
+		log.Println("scan: ", count)
+		err := rows.Scan(&blogs[count].BlogId, &blogs[count].BlogUid, &blogs[count].BlogTagId, &blogs[count].BlogContent,
+			&blogs[count].BlogTime, &blogs[count].BlogLike, &blogs[count].BlogUnlike, &blogs[count].BlogComment,
+			&blogs[count].BlogUsername, &blogs[count].BlogUserAvatar)
+		if err != nil {
+			return nil
+		}
+	}
+	blogs = blogs[:count]
 
 	for i, _ := range blogs {
+		log.Println(blogs[i].BlogUsername)
 		if blogs[i].BlogTagId != 0 {
 			blogs[i].Tag = *GetTagById(blogs[i].BlogTagId)
 		}
 		blogs[i].BlogPreview = getBlogPreview(blogs[i].BlogContent)
 		blogs[i].BlogTimeString = blogs[i].BlogTime.Format("2006-01-02 15:04:05")
 	}
-	return
+	return blogs
 }
 
 func GetTimeLineCount(uid int64) (count int64) {
