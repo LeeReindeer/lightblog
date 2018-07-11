@@ -1,8 +1,9 @@
 package tests
 
 import (
-	"github.com/LeeReindeer/lightblog/controllers"
 	"testing"
+
+	"github.com/LeeReindeer/lightblog/controllers"
 )
 
 func TestHash(t *testing.T) {

@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+
 	"github.com/LeeReindeer/lightblog/controllers"
 	"github.com/LeeReindeer/lightblog/util"
+
 	"github.com/astaxie/beego"
 	"github.com/astaxie/beego/orm"
 )

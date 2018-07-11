@@ -1,9 +1,11 @@
 package models
 
 import (
-	"github.com/LeeReindeer/lightblog/util"
-	"github.com/astaxie/beego/orm"
 	"log"
+
+	"github.com/LeeReindeer/lightblog/util"
+
+	"github.com/astaxie/beego/orm"
 )
 
 func GetAllComments(blogId int64) (comments []Comment) {

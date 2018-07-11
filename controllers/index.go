@@ -2,13 +2,15 @@ package controllers
 
 import (
 	"encoding/base64"
-	"github.com/LeeReindeer/lightblog/models"
-	"github.com/LeeReindeer/lightblog/util"
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/context"
 	"log"
 	"strconv"
 	"time"
+
+	"github.com/LeeReindeer/lightblog/models"
+	"github.com/LeeReindeer/lightblog/util"
+
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 )
 
 type IndexController struct {

@@ -2,10 +2,12 @@ package tests
 
 import (
 	"fmt"
+	"testing"
+
 	"github.com/LeeReindeer/lightblog/models"
 	"github.com/LeeReindeer/lightblog/util"
+
 	"github.com/astaxie/beego/orm"
-	"testing"
 )
 
 func Test(t *testing.T) {

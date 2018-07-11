@@ -1,10 +1,11 @@
 package util
 
 import (
-	"github.com/astaxie/beego/context"
 	"log"
 	"strconv"
 	"strings"
+
+	"github.com/astaxie/beego/context"
 )
 
 func CheckDBErr(err error) {
@@ -66,10 +67,9 @@ func GetContentTag(content string) (string, bool, int) {
 	return content[1:index], true, index + 1
 }
 
-// tag with prefix '#', and less than 10 chars, no less than 1
+// tag with prefix '#', and less than 25 chars, no less than 1
 func IsContentTagged(content string) bool {
 	contentRune := []rune(content)
-	//log.Println("len of rune: ", len(contentRune))
 	index := -1
 	for i, value := range contentRune {
 		if string(value) == " " {
@@ -77,8 +77,6 @@ func IsContentTagged(content string) bool {
 			break
 		}
 	}
-	//log.Println("index of space: ", index)
-	//log.Println("tagged: ", strings.HasPrefix(content, "#"))
 	return strings.HasPrefix(content, "#") && index <= 25 && index > 1
 }
 

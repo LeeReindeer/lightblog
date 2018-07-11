@@ -5,13 +5,15 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
-	"github.com/LeeReindeer/lightblog/models"
-	"github.com/LeeReindeer/lightblog/util"
-	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/context"
 	"log"
 	"strconv"
 	"time"
+
+	"github.com/LeeReindeer/lightblog/models"
+	"github.com/LeeReindeer/lightblog/util"
+
+	"github.com/astaxie/beego"
+	"github.com/astaxie/beego/context"
 )
 
 type UserController struct {

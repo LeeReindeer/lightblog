@@ -1,11 +1,12 @@
 package models
 
 import (
+	"log"
+	"time"
+
 	"github.com/LeeReindeer/lightblog/util"
 	"github.com/astaxie/beego/orm"
 	_ "github.com/go-sql-driver/mysql"
-	"log"
-	"time"
 )
 
 func getBlogPreview(content string) (preview string) {
