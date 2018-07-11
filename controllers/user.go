@@ -99,6 +99,19 @@ func (this *UserController) RegisterUser() {
 	username := this.GetString("username")
 	pass := this.GetString("password")
 	passAgain := this.GetString("passwordAgain")
+	if username != "" {
+		existUser := models.GetUserByName(username)
+		if existUser != nil {
+			flash.Error("用户名已存在")
+			flash.Store(&this.Controller)
+			log.Println("username exist")
+			this.Ctx.Redirect(302, "/register")
+			return
+		}
+	} else {
+		this.Ctx.Redirect(302, "/register")
+		return
+	}
 	if pass != passAgain {
 		flash.Error("两次输入的密码不同")
 		flash.Store(&this.Controller)
