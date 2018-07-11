@@ -75,9 +75,9 @@ func GetBlogDetailFromView(id int64) (lightblog LightBlog) {
 	if err != nil {
 		log.Println(err.Error())
 	}
-
+	local, _ := time.LoadLocation("Asia/Shanghai")
 	lightblog.BlogPreview = getBlogPreview(lightblog.BlogContent)
-	lightblog.BlogTimeString = lightblog.BlogTime.Format("2006-01-02 15:04:05")
+	lightblog.BlogTimeString = lightblog.BlogTime.In(local).Format("2006-01-02 15:04:05")
 	if lightblog.BlogTagId != 0 {
 		lightblog.Tag = *GetTagById(lightblog.BlogTagId)
 		log.Println("tag name: ", lightblog.TagName)
@@ -108,21 +108,31 @@ func GetBlogById(id int64) (lightblog LightBlog) {
 	return
 }
 
-func GetBlogsByUid(uid int64) (blogs []LightBlog) {
-	o := orm.NewOrm()
-	_, err := o.Raw("SELECT * FROM blogdetail WHERE blog_uid=? ORDER BY blog_time DESC", uid).QueryRows(&blogs)
-	if err != nil {
-		return nil
+func GetBlogsByUid(uid int64) []LightBlog {
+	db, _ := orm.GetDB()
+	rows, _ := db.Query("SELECT * FROM blogdetail WHERE blog_uid=? ORDER BY blog_time DESC", uid)
+
+	blogs := make([]LightBlog, 20)
+	count := 0
+	for ; rows.Next(); count++ {
+		err := rows.Scan(&blogs[count].BlogId, &blogs[count].BlogUid, &blogs[count].BlogTagId, &blogs[count].BlogContent,
+			&blogs[count].BlogTime, &blogs[count].BlogLike, &blogs[count].BlogUnlike, &blogs[count].BlogComment,
+			&blogs[count].BlogUsername, &blogs[count].BlogUserAvatar)
+		if err != nil {
+			return nil
+		}
 	}
-	log.Println("wow")
+	blogs = blogs[:count]
+
+	local, _ := time.LoadLocation("Asia/Shanghai")
 	for i, _ := range blogs {
 		if blogs[i].BlogTagId != 0 {
 			blogs[i].Tag = *GetTagById(blogs[i].BlogTagId)
 		}
 		blogs[i].BlogPreview = getBlogPreview(blogs[i].BlogContent)
-		blogs[i].BlogTimeString = blogs[i].BlogTime.Format("2006-01-02 15:04:05")
+		blogs[i].BlogTimeString = blogs[i].BlogTime.In(local).Format("2006-01-02 15:04:05")
 	}
-	return
+	return blogs
 }
 
 func SaveBlog(blog *Blog) int64 {
