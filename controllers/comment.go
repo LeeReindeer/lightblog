@@ -17,10 +17,10 @@ type CommentController struct {
 
 // GET: comment?comm_id=<id>&delete=true&redirect=<pre url>
 func (this *CommentController) DeleteComment() {
-	delete := this.GetString("delete")
+	deleteComm := this.GetString("delete")
 	commId, ok := util.StringToInt64(this.GetString("comm_id"))
 	comment := models.GetCommentById(commId)
-	if delete != "true" || !ok {
+	if deleteComm != "true" || !ok {
 		goto error
 	}
 	if _, ok = models.DeleteComment(&comment); ok {
