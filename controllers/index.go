@@ -27,15 +27,47 @@ func (this *IndexController) TimeLine() {
 		this.Redirect("/login", 302)
 		return
 	}
+	var blogs []models.LightBlog
+	curPage, err := this.GetInt("page")
+	if err != nil {
+		curPage = 1
+		blogs = models.GetTimeLineByUid(uid)
+	} else {
+		blogs = models.GetTimeLineByUidWithPaging(uid, curPage)
+	}
 
-	blogs := models.GetTimeLineByUid(uid)
-	log.Println("number of blogs: ", len(blogs))
-	this.Data["blogs"] = models.GetTimeLineByUid(uid)
+	this.Data["blogs"] = blogs
 	this.Data["thisUser"] = models.GetUserById(uid)
 	this.Data["redirect"] = this.Ctx.Input.URL()
+	paging(uid, curPage, this)
 
 	this.Layout = "layout.html"
 	this.TplName = "index.html"
+}
+
+func paging(uid int64, curPage int, that *IndexController) {
+	cnt := models.GetTimeLineCount(uid)
+	log.Println("sum of blogs:", cnt)
+	pages := int(cnt / 20)
+	if cnt%20 != 0 {
+		pages += 1
+	}
+	log.Println("pages: ", pages)
+	pages_ := make([]int, pages)
+	for i := 0; i < pages; i++ {
+		pages_[i] = i + 1
+	}
+	log.Println(pages_)
+	that.Data["pages"] = pages_
+	if curPage < pages {
+
+	}
+	if curPage < pages {
+		that.Data["next"] = curPage + 1
+	}
+	if curPage > 1 {
+		that.Data["prev"] = curPage - 1
+	}
 }
 
 func CheckLogin(ctx *context.Context) (int64, bool) {
